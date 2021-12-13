@@ -52,7 +52,7 @@ function(verb = "GET",
          secret = NULL, 
          session_token = NULL,
          use_https = TRUE,
-         bucket_as_subdomain=TRUE
+         bucket_as_subdomain=TRUE,
          ...) {
     
     # locate and validate credentials
