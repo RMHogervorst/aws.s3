@@ -52,6 +52,7 @@ function(verb = "GET",
          secret = NULL, 
          session_token = NULL,
          use_https = TRUE,
+         bucket_as_subdomain=TRUE
          ...) {
     
     # locate and validate credentials
@@ -93,7 +94,8 @@ function(verb = "GET",
     d_timestamp <- format(current, "%Y%m%dT%H%M%SZ", tz = "UTC")
     
     url_style <- match.arg(url_style)
-    url <- setup_s3_url(bucketname, region, path, accelerate, url_style = url_style, base_url = base_url, verbose = verbose, use_https = use_https)
+    url <- setup_s3_url(bucketname, region, path, accelerate, url_style = url_style, base_url = base_url, verbose = verbose, use_https = use_https, bucket_as_subdomain= bucket_as_subdomain)      
+           
     p <- httr::parse_url(url)
     action <- if (p$path == "") "/" else paste0("/", p$path)
     hostname <- paste(p$hostname, p$port, sep=ifelse(length(p$port), ":", ""))
@@ -271,7 +273,8 @@ function(bucketname,
          url_style = c("path", "virtual"), 
          base_url = Sys.getenv("AWS_S3_ENDPOINT", "s3.amazonaws.com"),
          verbose = getOption("verbose", FALSE),
-         use_https = TRUE) 
+         use_https = TRUE, 
+         bucket_as_subdomain= TRUE) 
 {
     # Figure out 'path' or 'virtual' style. Default is 'path'.
     url_style <- match.arg(url_style)
@@ -283,9 +286,13 @@ function(bucketname,
         }
         accelerate <- FALSE
         dualstack <- FALSE
-        if (!is.null(region) && region != "") {
+           
+        if (!is.null(region) && region != "" && bucket_as_subdomain) {
             base_url <- paste0(region, ".", base_url)
         }
+                 
+            
+            
     } else {
         # if accelerate = TRUE, must use virtual paths
         if (isTRUE(accelerate)) {
