@@ -366,6 +366,8 @@ function(bucketname,
             url <- paste0(prefix, base_url, "/", bucketname)
         }
     }
+    message("hacking url, so it does at least output what I want")
+    url <- paste0(prefix, base_url, "/", bucketname)
     
     # cleanup terminal slashes
     terminal_slash <- grepl("/$", path)
